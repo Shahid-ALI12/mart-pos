@@ -1,0 +1,132 @@
+[package]
+name = "mart-pos"
+version = "0.1.0"
+description = "Large Mart POS/ERP System"
+edition = "2021"
+authors = ["Shahid Ali <shahidshafaqat2007@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/Shahid-ALI12/mart-pos"
+
+[workspace]
+resolver = "2"
+
+[dependencies]
+# Tauri
+tauri = { version = "2.0", features = ["macros", "cli"] }
+tauri-plugin-sql = { version = "2.0", features = ["sqlite", "libsql", "encryption"] }
+tauri-plugin-fs = "2.0"
+tauri-plugin-shell = "2.0"
+tauri-plugin-dialog = "2.0"
+tauri-plugin-opener = "2.0"
+tauri-plugin-clipboard-manager = "2.0"
+tauri-plugin-global-shortcut = "2.0"
+tauri-plugin-notification = "2.0"
+tauri-plugin-store = "2.0"
+tauri-plugin-log = { version = "2.0", features = ["tracing"] }
+tauri-plugin-updater = "2.0"
+tauri-plugin-http = "2.0"
+tauri-plugin-webview = "2.0"
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "sqlite", "chrono", "uuid", "json", "migrate"] }
+sqlite = { version = "0.36", features = ["bundled", "modern_sqlite", "load_extension", "encryption"] }
+sqlcipher = "0.36"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_with = "6.0"
+
+# Async
+tokio = { version = "1.0", features = ["full"] }
+tokio-util = "0.7"
+futures = "0.3"
+
+# UUID
+uuid = { version = "1.0", features = ["v4", "v7", "serde", "fast-rng"] }
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+time = "0.3"
+
+# Crypto
+argon2 = "0.5"
+rand = "0.8"
+zeroize = "1.0"
+
+# WebRTC for sync
+webrtc = { version = "0.11", features = ["data-channel", "sctp"] }
+webrtc-util = "0.11"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
+
+# Config
+config = "0.14"
+toml = "0.8"
+
+# Utilities
+anyhow = "1.0"
+thiserror = "1.0"
+once_cell = "1.0"
+parking_lot = "0.12"
+dashmap = "5.0"
+indexmap = "2.0"
+
+# File watching
+notify = { version = "6.0", features = ["tokio"] }
+
+# HTTP client (for e-invoice API)
+reqwest = { version = "0.12", features = ["json", "rustls-tls", "multipart"] }
+
+# ESC/POS printing
+escpos = { version = "0.5", features = ["usb", "serial", "network"] }
+
+# Serial port (for scales, pole displays)
+serialport = { version = "5.0", features = ["tokio"] }
+
+# HID API (for barcode scanners)
+hidapi = "2.0"
+
+# Image processing (for barcode generation)
+image = "0.25"
+barcode = "0.3"
+
+# CSV export
+csv = "1.3"
+csv-async = "1.3"
+
+# Excel export
+calamine = "0.22"
+
+# PDF generation (for reports)
+printpdf = "0.4"
+
+# Compression (for backups)
+flate2 = "1.0"
+zip = "0.6"
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
+
+[profile.dev]
+debug = true
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+    "Win32_Devices_Printers",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_System_Com",
+    "Win32_Foundation",
+    "Win32_Graphics_Gdi",
+] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+libudev-sys = "0.1"
