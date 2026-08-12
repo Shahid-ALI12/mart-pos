@@ -1,0 +1,12 @@
+{
+  "name": "mart-pos",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0"
+  },
+  "packageManager": "pnpm@11.21.0"
+}
