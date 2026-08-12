@@ -110,7 +110,9 @@ async fn create_token(pool: &DbPool, user_id: i64, role_id: i64, permissions: Ve
 }
 
 /// Verify a JWT's signature + expiry and return the claims.
-async fn verify_token(pool: &DbPool, token: &str) -> Result<Claims, String> {
+/// Marked `pub(crate)` so other command modules (e.g. sales) can resolve the
+/// current user from a token without re-implementing the verification logic.
+pub(crate) async fn verify_token(pool: &DbPool, token: &str) -> Result<Claims, String> {
     let secret = get_or_create_jwt_secret(pool).await?;
     let token_data = decode::<Claims>(
         token,

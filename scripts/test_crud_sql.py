@@ -26,7 +26,8 @@ def run():
     conn = sqlite3.connect(db.name)
     cur = conn.cursor()
 
-    base = os.path.join(os.path.dirname(__file__), "..", "mart-pos", "src", "database", "migrations")
+    # This script lives at <repo>/scripts/test_crud_sql.py — migrations are one level up.
+    base = os.path.join(os.path.dirname(__file__), "..", "src", "database", "migrations")
     base = os.path.abspath(base)
 
     for m in MIGRATIONS:
