@@ -11,39 +11,53 @@ import { StockTransfer } from './modules/inventory/StockTransfer'
 import { LowStockAlerts } from './modules/inventory/LowStockAlerts'
 import { ExpiryManagement } from './modules/inventory/ExpiryManagement'
 import { BarcodeLabels } from './modules/inventory/BarcodeLabels'
-import { Suppliers } from './modules/purchases/Suppliers'
-import { PurchaseOrders } from './modules/purchases/PurchaseOrders'
-import { GoodsReceipt } from './modules/purchases/GoodsReceipt'
-import { PurchaseReturns } from './modules/purchases/PurchaseReturns'
-import { PayablesReport } from './modules/purchases/PayablesReport'
-import { SalesRegister } from './modules/sales/SalesRegister'
-import { SalesReturn } from './modules/sales/SalesReturn'
-import { Quotations } from './modules/sales/Quotations'
-import { Layaways } from './modules/sales/Layaways'
-import { CustomerOutstanding } from './modules/sales/CustomerOutstanding'
-import { Customers } from './modules/customers/Customers'
-import { LoyaltyProgram } from './modules/customers/LoyaltyProgram'
-import { CreditManagement } from './modules/customers/CreditManagement'
-import { CustomerStatements } from './modules/customers/CustomerStatements'
-import { SalesReports } from './modules/reports/SalesReports'
-import { ProfitLossReport } from './modules/reports/ProfitLossReport'
-import { StockReports } from './modules/reports/StockReports'
-import { GSTReports } from './modules/reports/GSTReports'
-import { CounterPerformance } from './modules/reports/CounterPerformance'
-import { TopProducts } from './modules/reports/TopProducts'
-import { CustomReportBuilder } from './modules/reports/CustomReportBuilder'
-import { ExpenseEntry } from './modules/expenses/ExpenseEntry'
-import { ExpenseReports } from './modules/expenses/ExpenseReports'
-import { PettyCash } from './modules/expenses/PettyCash'
-import { UserManagement } from './modules/users/UserManagement'
-import { RolePermissions } from './modules/users/RolePermissions'
-import { ActivityLog } from './modules/users/ActivityLog'
-import { GeneralSettings } from './modules/settings/GeneralSettings'
-import { CounterSetup } from './modules/settings/CounterSetup'
-import { TaxSetup } from './modules/settings/TaxSetup'
-import { BackupRestore } from './modules/settings/BackupRestore'
-import { SyncSettings } from './modules/settings/SyncSettings'
-import { HardwareConfig } from './modules/settings/HardwareConfig'
+import { 
+  Suppliers, 
+  PurchaseOrders, 
+  GoodsReceipt, 
+  PurchaseReturns, 
+  PayablesReport 
+} from './modules/purchases'
+import { 
+  SalesRegister, 
+  SalesReturn, 
+  Quotations, 
+  Layaways, 
+  CustomerOutstanding 
+} from './modules/sales'
+import { 
+  Customers, 
+  LoyaltyProgram, 
+  CreditManagement, 
+  CustomerStatements 
+} from './modules/customers'
+import { 
+  SalesReports, 
+  ProfitLossReport, 
+  StockReports, 
+  GSTReports, 
+  CounterPerformance, 
+  TopProducts, 
+  CustomReportBuilder 
+} from './modules/reports'
+import { 
+  ExpenseEntry, 
+  ExpenseReports, 
+  PettyCash 
+} from './modules/expenses'
+import { 
+  UserManagement, 
+  RolePermissions, 
+  ActivityLog 
+} from './modules/users'
+import { 
+  GeneralSettings, 
+  CounterSetup, 
+  TaxSetup, 
+  BackupRestore, 
+  SyncSettings, 
+  HardwareConfig 
+} from './modules/settings'
 import { ProtectedRoute } from './shared/components/ProtectedRoute'
 
 function App() {
