@@ -25,40 +25,29 @@ export function Products() {
   const { data: productsData, isLoading } = useQuery({
     queryKey: ['products', searchQuery, page],
     queryFn: async () => {
-      try {
-        return await invoke('list_products', { 
-          query: searchQuery, 
-          page, 
-          pageSize,
-          activeOnly: true 
-        }) as { data: ProductWithDetails[]; total: number }
-      } catch {
-        return { data: getMockProducts(), total: getMockProducts().length }
-      }
+      // No more getMockProducts() fallback — real backend is implemented (step 4).
+      // If invoke throws, useQuery will surface the error and we render an empty table.
+      return await invoke('list_products', {
+        query: searchQuery,
+        page,
+        pageSize,
+        activeOnly: true
+      }) as { data: ProductWithDetails[]; total: number }
     },
   })
 
   // Fetch categories, brands, units for dropdowns
   const { data: categories } = useQuery({
     queryKey: ['categories'],
-    queryFn: async () => {
-      try { return await invoke('list_categories') as Category[] } 
-      catch { return getMockCategories() }
-    },
+    queryFn: async () => await invoke('list_categories') as Category[],
   })
   const { data: brands } = useQuery({
     queryKey: ['brands'],
-    queryFn: async () => {
-      try { return await invoke('list_brands') as Brand[] } 
-      catch { return getMockBrands() }
-    },
+    queryFn: async () => await invoke('list_brands') as Brand[],
   })
   const { data: units } = useQuery({
     queryKey: ['units'],
-    queryFn: async () => {
-      try { return await invoke('list_units') as Unit[] } 
-      catch { return getMockUnits() }
-    },
+    queryFn: async () => await invoke('list_units') as Unit[],
   })
 
   // Mutations
@@ -473,41 +462,6 @@ function ProductModal({
       </div>
     </div>
   )
-}
-
-// Mock data functions
-function getMockProducts(): ProductWithDetails[] {
-  return [
-    { id: 1, barcode: '8901234567890', sku: 'AMUL-MLK-1L', name: 'Amul Milk 1L', category_id: 1, brand_id: 1, unit_id: 1, purchase_price: 52, sale_price: 60, min_sale_price: 55, mrp: 62, gst_rate: 0, hsn_code: '0401', reorder_level: 50, max_stock_level: 200, track_expiry: true, track_batch: true, track_serial: false, is_active: true, created_at: '', updated_at: '', category_name: 'Dairy', brand_name: 'Amul', unit_name: 'Pieces', unit_short_name: 'pcs', current_stock: 120 },
-    { id: 2, barcode: '8901234567891', sku: 'BRIT-BRD-400', name: 'Britannia Bread 400g', category_id: 2, brand_id: 2, unit_id: 1, purchase_price: 35, sale_price: 40, min_sale_price: 38, mrp: 42, gst_rate: 0, hsn_code: '1905', reorder_level: 30, max_stock_level: 100, track_expiry: true, track_batch: true, track_serial: false, is_active: true, created_at: '', updated_at: '', category_name: 'Bakery', brand_name: 'Britannia', unit_name: 'Pieces', unit_short_name: 'pcs', current_stock: 45 },
-    { id: 3, barcode: '8901234567892', sku: 'PARL-G-100', name: 'Parle-G Biscuits 100g', category_id: 3, brand_id: 3, unit_id: 1, purchase_price: 8, sale_price: 10, min_sale_price: 9, mrp: 10, gst_rate: 18, hsn_code: '1905', reorder_level: 100, max_stock_level: 500, track_expiry: true, track_batch: true, track_serial: false, is_active: true, created_at: '', updated_at: '', category_name: 'Biscuits', brand_name: 'Parle', unit_name: 'Pieces', unit_short_name: 'pcs', current_stock: 300 },
-  ]
-}
-
-function getMockCategories(): Category[] {
-  return [
-    { id: 1, name: 'Dairy', parent_id: null, gst_rate: 0, hsn_code: '0401', description: '', is_active: true, created_at: '', updated_at: '' },
-    { id: 2, name: 'Bakery', parent_id: null, gst_rate: 0, hsn_code: '1905', description: '', is_active: true, created_at: '', updated_at: '' },
-    { id: 3, name: 'Biscuits', parent_id: null, gst_rate: 18, hsn_code: '1905', description: '', is_active: true, created_at: '', updated_at: '' },
-    { id: 4, name: 'Beverages', parent_id: null, gst_rate: 28, hsn_code: '2202', description: '', is_active: true, created_at: '', updated_at: '' },
-  ]
-}
-
-function getMockBrands(): Brand[] {
-  return [
-    { id: 1, name: 'Amul', description: '', is_active: true, created_at: '' },
-    { id: 2, name: 'Britannia', description: '', is_active: true, created_at: '' },
-    { id: 3, name: 'Parle', description: '', is_active: true, created_at: '' },
-    { id: 4, name: 'Tata', description: '', is_active: true, created_at: '' },
-  ]
-}
-
-function getMockUnits(): Unit[] {
-  return [
-    { id: 1, name: 'Pieces', short_name: 'pcs', type: 'count', decimals: 0, is_active: true },
-    { id: 2, name: 'Kilogram', short_name: 'kg', type: 'weight', decimals: 3, is_active: true },
-    { id: 3, name: 'Liter', short_name: 'L', type: 'volume', decimals: 3, is_active: true },
-  ]
 }
 
 import { X } from 'lucide-react'

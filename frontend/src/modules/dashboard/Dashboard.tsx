@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '../../shared/components/ui/Card'
-import { Users, ShoppingCart, Package, Truck, Rupee, TrendingUp, AlertTriangle, Clock } from 'lucide-react'
+import { Users, ShoppingCart, Package, Truck, Rupee, TrendingUp, AlertTriangle, Clock, Search, CheckCircle, CreditCard, BarChart3 } from 'lucide-react'
 import { formatCurrency, formatNumber } from '../../shared/utils'
 import { useQuery } from '@tanstack/react-query'
 import { invoke } from '@tauri-apps/api/core'
@@ -23,14 +23,13 @@ export function Dashboard() {
   const { data: stats, isLoading, error } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
-      try {
-        return await invoke('get_dashboard_stats') as DashboardStats
-      } catch {
-        // Return mock data if backend not ready
-        return getMockStats()
-      }
+      // No more getMockStats() fallback — if the backend is unreachable or
+      // the command isn't registered yet, useQuery will surface the error
+      // via the `error` state, and we render an explicit error UI below.
+      return await invoke('get_dashboard_stats') as DashboardStats
     },
     refetchInterval: 30000, // Refresh every 30 seconds
+    retry: false, // don't silently retry a missing command forever
   })
 
   const statCards = [
@@ -109,9 +108,15 @@ export function Dashboard() {
   }
 
   if (error) {
+    const errMsg = error instanceof Error ? error.message : String(error)
     return (
-      <div className="text-center p-8">
-        <p className="text-red-600">Failed to load dashboard data</p>
+      <div className="text-center p-8 space-y-2">
+        <p className="text-red-600 font-medium">Failed to load dashboard data</p>
+        <p className="text-xs text-gray-500 max-w-md mx-auto">
+          The backend <code className="bg-gray-100 px-1 rounded">get_dashboard_stats</code> command
+          is not registered yet (or returned an error). Until it is implemented,
+          the dashboard cannot show live numbers. — {errMsg}
+        </p>
       </div>
     )
   }
@@ -391,46 +396,4 @@ function AlertsPanel({ lowStockCount, expiringSoonCount }: { lowStockCount: numb
       ))}
     </div>
   )
-}
-
-import { Search, CheckCircle, CreditCard, BarChart3 } from 'lucide-react'
-
-function getMockStats(): DashboardStats {
-  return {
-    todaySales: 125750,
-    todayInvoices: 87,
-    todayCustomers: 65,
-    totalProducts: 2847,
-    lowStockCount: 23,
-    expiringSoonCount: 12,
-    totalOutstanding: 45890,
-    totalStockValue: 1875000,
-    monthlySales: [
-      { month: 'Jan', sales: 1850000 },
-      { month: 'Feb', sales: 1920000 },
-      { month: 'Mar', sales: 2100000 },
-      { month: 'Apr', sales: 2250000 },
-      { month: 'May', sales: 2400000 },
-      { month: 'Jun', sales: 2380000 },
-      { month: 'Jul', sales: 2550000 },
-      { month: 'Aug', sales: 2680000 },
-      { month: 'Sep', sales: 2450000 },
-      { month: 'Oct', sales: 2720000 },
-      { month: 'Nov', sales: 2890000 },
-      { month: 'Dec', sales: 3150000 },
-    ],
-    topProducts: [
-      { name: 'Amul Milk 1L', qty: 450, amount: 27000 },
-      { name: 'Britannia Bread', qty: 380, amount: 19000 },
-      { name: 'Parle-G Biscuits', qty: 520, amount: 15600 },
-      { name: 'Tata Salt 1kg', qty: 290, amount: 8700 },
-      { name: 'Fortune Oil 1L', qty: 180, amount: 28800 },
-    ],
-    paymentModes: [
-      { mode: 'cash', amount: 58000, count: 42 },
-      { mode: 'upi', amount: 42500, count: 31 },
-      { mode: 'card', amount: 18750, count: 11 },
-      { mode: 'credit', amount: 6500, count: 3 },
-    ],
-  }
 }
