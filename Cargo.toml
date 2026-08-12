@@ -27,9 +27,13 @@ tauri-plugin-http = "2.0"
 # tauri-plugin-webview = "2.0"
 
 # Database
+# sqlx 0.8 pulls in libsqlite3-sys 0.30 — by adding it here with the
+# `bundled-sqlcipher-vendored-openssl` feature, we override the bundled SQLite
+# with SQLCipher (a drop-in SQLite fork with AES-256 encryption support).
+# This is the cleanest way to get SQLCipher into a sqlx project: no system
+# libsqlcipher-dev dependency, fully static, works on Windows/macOS/Linux.
 sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "sqlite", "chrono", "uuid", "json", "migrate", "macros"] }
-# sqlite = { version = "0.36", features = ["bundled", "encryption"] }
-# sqlcipher = "0.36"
+libsqlite3-sys = { version = "0.30", features = ["bundled-sqlcipher-vendored-openssl"] }
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }

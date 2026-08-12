@@ -2,9 +2,7 @@
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::sync::Arc;
-use tauri::{Manager, State, Emitter};
-use tauri_plugin_sql::{Migration, MigrationKind};
+use tauri::Manager;
 use tracing::{info, error};
 
 // Module declarations
@@ -26,50 +24,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     info!("Starting Mart POS application");
 
-    // Database migrations
-    let migrations = vec![
-        Migration {
-            version: 1,
-            description: "initial_schema",
-            sql: include_str!("database/migrations/001_initial_schema.sql"),
-            kind: MigrationKind::Up,
-        },
-        Migration {
-            version: 2,
-            description: "products_inventory",
-            sql: include_str!("database/migrations/002_products_inventory.sql"),
-            kind: MigrationKind::Up,
-        },
-        Migration {
-            version: 3,
-            description: "purchases",
-            sql: include_str!("database/migrations/003_purchases.sql"),
-            kind: MigrationKind::Up,
-        },
-        Migration {
-            version: 4,
-            description: "sales_customers",
-            sql: include_str!("database/migrations/004_sales_customers.sql"),
-            kind: MigrationKind::Up,
-        },
-        Migration {
-            version: 5,
-            description: "expenses_transfers_sync",
-            sql: include_str!("database/migrations/005_expenses_transfers_sync.sql"),
-            kind: MigrationKind::Up,
-        },
-        Migration {
-            version: 6,
-            description: "user_fields",
-            sql: include_str!("database/migrations/006_user_fields.sql"),
-            kind: MigrationKind::Up,
-        },
-    ];
-
+    // Migrations are now owned by the backend (sqlx::migrate!) — see database/mod.rs.
+    // tauri-plugin-sql is kept as a passthrough plugin for any future frontend
+    // direct DB access, but it no longer preloads or auto-migrates the DB.
     tauri::Builder::default()
-        .plugin(tauri_plugin_sql::Builder::default()
-            .add_migrations("sqlite:main.db", migrations)
-            .build())
+        .plugin(tauri_plugin_sql::Builder::default().build())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
