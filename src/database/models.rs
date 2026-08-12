@@ -27,6 +27,7 @@ pub struct User {
     pub email: Option<String>,
     pub is_active: bool,
     pub last_login: Option<NaiveDateTime>,
+    pub must_change_password: bool,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
@@ -614,8 +615,25 @@ pub struct LoginRequest {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LoginResponse {
     pub user: UserWithRole,
-    pub token: String,  // Simple session token
+    pub token: String,  // JWT
     pub permissions: Vec<String>,
+}
+
+/// JWT claims — signed with HMAC-SHA256 using a secret stored in the `settings` table.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Claims {
+    /// Subject (user_id)
+    pub sub: i64,
+    /// Role id
+    pub role_id: i64,
+    /// Permissions granted by this token
+    pub permissions: Vec<String>,
+    /// Expiry (unix timestamp, seconds)
+    pub exp: usize,
+    /// Issued at (unix timestamp, seconds)
+    pub iat: usize,
+    /// JWT id (unique per token, for future blacklisting)
+    pub jti: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

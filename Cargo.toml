@@ -53,6 +53,9 @@ argon2 = "0.5"
 rand = "0.8"
 zeroize = "1.0"
 
+# JWT
+jsonwebtoken = "9"
+
 # WebRTC for sync - disabled for now (requires OpenSSL + Perl)
 # webrtc = { version = "0.11", features = ["vendored-openssl"] }
 # webrtc-util = "0.11"

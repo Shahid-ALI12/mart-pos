@@ -58,6 +58,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             sql: include_str!("database/migrations/005_expenses_transfers_sync.sql"),
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 6,
+            description: "user_fields",
+            sql: include_str!("database/migrations/006_user_fields.sql"),
+            kind: MigrationKind::Up,
+        },
     ];
 
     tauri::Builder::default()

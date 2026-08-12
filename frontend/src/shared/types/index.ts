@@ -8,6 +8,7 @@ export interface User {
   email?: string
   is_active: boolean
   last_login?: string
+  must_change_password: boolean
   created_at: string
   updated_at: string
 }
