@@ -1,5 +1,5 @@
 // database/mod.rs
-use sqlx::{sqlite::SqlitePoolOptions, SqlitePool};
+use sqlx::{sqlite::SqlitePoolOptions, SqlitePool, Row};
 use std::sync::Arc;
 use tauri::Manager;
 use tracing::{info, error};

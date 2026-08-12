@@ -1,0 +1,21 @@
+// commands/mod.rs - Command modules
+pub mod auth;
+pub mod users;
+pub mod settings;
+pub mod categories;
+pub mod brands;
+pub mod units;
+pub mod products;
+pub mod variants;
+pub mod conversions;
+pub mod stock;
+pub mod suppliers;
+pub mod purchases;
+pub mod customers;
+pub mod sales;
+pub mod expenses;
+pub mod transfers;
+pub mod reports;
+pub mod sync;
+pub mod hardware;
+pub mod backup;

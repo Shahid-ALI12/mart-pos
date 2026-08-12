@@ -3,7 +3,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::sync::Arc;
-use tauri::{Manager, State};
+use tauri::{Manager, State, Emitter};
 use tauri_plugin_sql::{Migration, MigrationKind};
 use tracing::{info, error};
 
@@ -15,8 +15,7 @@ mod utils;
 use database::{Database, DbState};
 use commands::*;
 
-#[tokio::main]
-async fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize tracing
     tracing_subscriber::fmt()
         .with_env_filter(
@@ -32,31 +31,31 @@ async fn main() {
         Migration {
             version: 1,
             description: "initial_schema",
-            sql: include_str!("../database/migrations/001_initial_schema.sql"),
+            sql: include_str!("database/migrations/001_initial_schema.sql"),
             kind: MigrationKind::Up,
         },
         Migration {
             version: 2,
             description: "products_inventory",
-            sql: include_str!("../database/migrations/002_products_inventory.sql"),
+            sql: include_str!("database/migrations/002_products_inventory.sql"),
             kind: MigrationKind::Up,
         },
         Migration {
             version: 3,
             description: "purchases",
-            sql: include_str!("../database/migrations/003_purchases.sql"),
+            sql: include_str!("database/migrations/003_purchases.sql"),
             kind: MigrationKind::Up,
         },
         Migration {
             version: 4,
             description: "sales_customers",
-            sql: include_str!("../database/migrations/004_sales_customers.sql"),
+            sql: include_str!("database/migrations/004_sales_customers.sql"),
             kind: MigrationKind::Up,
         },
         Migration {
             version: 5,
             description: "expenses_transfers_sync",
-            sql: include_str!("../database/migrations/005_expenses_transfers_sync.sql"),
+            sql: include_str!("database/migrations/005_expenses_transfers_sync.sql"),
             kind: MigrationKind::Up,
         },
     ];
@@ -70,25 +69,13 @@ async fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_clipboard_manager::init())
-        .plugin(tauri_plugin_global_shortcut::Builder::new()
-            .with_shortcuts(["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12"])?
-            .build())
+        // .plugin(tauri_plugin_global_shortcut::Builder::new()
+        //     .with_shortcuts(["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12"])
+        //     .build()?)
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_store::Builder::default().build())
-        .plugin(tauri_plugin_log::Builder::default()
-            .level(log::LevelFilter::Info)
-            .target(tauri_plugin_log::Target::new(
-                tauri_plugin_log::TargetKind::Stdout
-            ))
-            .target(tauri_plugin_log::Target::new(
-                tauri_plugin_log::TargetKind::File {
-                    path: std::path::PathBuf::from("logs"),
-                    file_name: Some("mart-pos".to_string()),
-                }
-            ))
-            .build())
         .plugin(tauri_plugin_http::init())
-        .plugin(tauri_plugin_updater::Builder::new().build())
+        // .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(DbState::default())
         .invoke_handler(tauri::generate_handler![
             // Auth commands
@@ -240,45 +227,52 @@ async fn main() {
             backup::list_backups,
         ])
         .setup(|app| {
-            // Initialize database connection
-            let db_state: State<DbState> = app.state();
+            // Initialize database connection synchronously
             let app_handle = app.handle().clone();
+            let db_state = app.state::<DbState>().inner().clone();
             
-            tauri::async_runtime::spawn(async move {
-                if let Err(e) = Database::initialize(&app_handle, db_state.inner()).await {
+            // Initialize database synchronously
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            let init_result: Result<(), anyhow::Error> = rt.block_on(async {
+                if let Err(e) = Database::initialize(&app_handle, &db_state).await {
                     error!("Failed to initialize database: {}", e);
                 } else {
                     info!("Database initialized successfully");
                 }
+                Ok(())
             });
-
-            // Set up global shortcuts for POS
-            let app_handle = app.handle().clone();
-            app.global_shortcut().on_shortcut("f1", move |_| {
-                // F1 - Payment screen
-                let _ = app_handle.emit("global-shortcut", "f1");
-            });
+            let _ = init_result;
             
-            let app_handle = app.handle().clone();
-            app.global_shortcut().on_shortcut("f2", move |_| {
-                // F2 - Hold bill
-                let _ = app_handle.emit("global-shortcut", "f2");
-            });
-            
-            let app_handle = app.handle().clone();
-            app.global_shortcut().on_shortcut("f3", move |_| {
-                // F3 - Customer search
-                let _ = app_handle.emit("global-shortcut", "f3");
-            });
-            
-            let app_handle = app.handle().clone();
-            app.global_shortcut().on_shortcut("f4", move |_| {
-                // F4 - Return mode
-                let _ = app_handle.emit("global-shortcut", "f4");
-            });
+                        // Set up global shortcuts for POS
+            // TODO: Implement global shortcuts when plugin API is confirmed
+            // let app_handle = app.handle().clone();
+            // app.global_shortcut().on_shortcut("f1", move |_| {
+            //     // F1 - Payment screen
+            //     let _ = app_handle.emit("global-shortcut", "f1");
+            // });
+            // 
+            // let app_handle = app.handle().clone();
+            // app.global_shortcut().on_shortcut("f2", move |_| {
+            //     // F2 - Hold bill
+            //     let _ = app_handle.emit("global-shortcut", "f2");
+            // });
+            // 
+            // let app_handle = app.handle().clone();
+            // app.global_shortcut().on_shortcut("f3", move |_| {
+            //     // F3 - Customer search
+            //     let _ = app_handle.emit("global-shortcut", "f3");
+            // });
+            // 
+            // let app_handle = app.handle().clone();
+            // app.global_shortcut().on_shortcut("f4", move |_| {
+            //     // F4 - Return mode
+            //     let _ = app_handle.emit("global-shortcut", "f4");
+            // });
 
             Ok(())
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+    
+    Ok(())
 }

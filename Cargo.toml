@@ -12,8 +12,8 @@ resolver = "2"
 
 [dependencies]
 # Tauri
-tauri = { version = "2.0", features = ["macros", "cli"] }
-tauri-plugin-sql = { version = "2.0", features = ["sqlite", "libsql", "encryption"] }
+tauri = { version = "2.0", features = ["default"] }
+tauri-plugin-sql = { version = "2.0", features = ["sqlite"] }
 tauri-plugin-fs = "2.0"
 tauri-plugin-shell = "2.0"
 tauri-plugin-dialog = "2.0"
@@ -22,20 +22,19 @@ tauri-plugin-clipboard-manager = "2.0"
 tauri-plugin-global-shortcut = "2.0"
 tauri-plugin-notification = "2.0"
 tauri-plugin-store = "2.0"
-tauri-plugin-log = { version = "2.0", features = ["tracing"] }
 tauri-plugin-updater = "2.0"
 tauri-plugin-http = "2.0"
-tauri-plugin-webview = "2.0"
+# tauri-plugin-webview = "2.0"
 
 # Database
-sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "sqlite", "chrono", "uuid", "json", "migrate"] }
-sqlite = { version = "0.36", features = ["bundled", "modern_sqlite", "load_extension", "encryption"] }
-sqlcipher = "0.36"
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "sqlite", "chrono", "uuid", "json", "migrate", "macros"] }
+# sqlite = { version = "0.36", features = ["bundled", "encryption"] }
+# sqlcipher = "0.36"
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-serde_with = "6.0"
+serde_with = "3.22"
 
 # Async
 tokio = { version = "1.0", features = ["full"] }
@@ -54,9 +53,9 @@ argon2 = "0.5"
 rand = "0.8"
 zeroize = "1.0"
 
-# WebRTC for sync
-webrtc = { version = "0.11", features = ["data-channel", "sctp"] }
-webrtc-util = "0.11"
+# WebRTC for sync - disabled for now (requires OpenSSL + Perl)
+# webrtc = { version = "0.11", features = ["vendored-openssl"] }
+# webrtc-util = "0.11"
 
 # Logging
 tracing = "0.1"
@@ -65,6 +64,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"]
 # Config
 config = "0.14"
 toml = "0.8"
+dirs = "6.0"
 
 # Utilities
 anyhow = "1.0"
@@ -73,25 +73,26 @@ once_cell = "1.0"
 parking_lot = "0.12"
 dashmap = "5.0"
 indexmap = "2.0"
+log = "0.4"
 
 # File watching
-notify = { version = "6.0", features = ["tokio"] }
+notify = { version = "6.1", features = ["mio"] }
 
 # HTTP client (for e-invoice API)
 reqwest = { version = "0.12", features = ["json", "rustls-tls", "multipart"] }
 
 # ESC/POS printing
-escpos = { version = "0.5", features = ["usb", "serial", "network"] }
+escpos = { version = "0.5", features = ["full"] }
 
 # Serial port (for scales, pole displays)
-serialport = { version = "5.0", features = ["tokio"] }
+serialport = { version = "4.9", features = ["default"] }
 
 # HID API (for barcode scanners)
 hidapi = "2.0"
 
 # Image processing (for barcode generation)
 image = "0.25"
-barcode = "0.3"
+barcodes = "0.2"
 
 # CSV export
 csv = "1.3"
@@ -121,7 +122,7 @@ panic = "abort"
 
 [target.'cfg(windows)'.dependencies]
 windows = { version = "0.58", features = [
-    "Win32_Devices_Printers",
+    "Devices_Printers",
     "Win32_UI_WindowsAndMessaging",
     "Win32_System_Com",
     "Win32_Foundation",
