@@ -1,4 +1,5 @@
 // commands/mod.rs - Command modules
+pub mod common;
 pub mod auth;
 pub mod users;
 pub mod settings;
