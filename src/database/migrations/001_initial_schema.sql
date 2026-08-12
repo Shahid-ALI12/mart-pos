@@ -31,9 +31,12 @@ CREATE TABLE users (
 );
 
 -- Default admin user (password: admin123 - change on first login!)
--- Argon2id hash for 'admin123'
+-- Argon2id PHC string for 'admin123' generated with params matching
+-- the Rust `argon2 = "0.5"` crate's Argon2::default():
+--   m=19456, t=2, p=1, hash_len=32, type=Argon2id
+-- Regenerate via: python3 scripts/gen_admin_hash.py
 INSERT INTO users (id, username, password_hash, role_id, name, is_active) VALUES
-(1, 'admin', '$argon2id$v=19$m=65536,t=3,p=4$c29tZXNhbHQ$'+'invaliddummyhash', 1, 'Administrator', 1);
+(1, 'admin', '$argon2id$v=19$m=19456,t=2,p=1$d0IFyQpFavQPhVNK4qpDRw$MtyvS3RlIy63SPEwY+TiLVZedGX5puf547WLpo6g5t4', 1, 'Administrator', 1);
 
 CREATE TABLE settings (
     key TEXT PRIMARY KEY,
