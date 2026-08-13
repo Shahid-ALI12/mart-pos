@@ -1,17 +1,20 @@
 // main.rs - Tauri application entry point
+//
+// This is a thin binary wrapper around the `mart_pos` library crate (see
+// `src/lib.rs`). All real logic lives in the library so that integration
+// tests under `tests/` can import the same code paths. The Tauri command
+// handler list and the `.setup()` hook remain here because they need the
+// `tauri::generate_handler!` / `tauri::generate_context!` macros, which
+// only work inside the binary crate.
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::Manager;
 use tracing::{info, error};
 
-// Module declarations
-mod database;
-mod commands;
-mod utils;
-
-use database::{Database, DbState};
-use commands::*;
+// Pull modules from the library crate.
+use mart_pos::database::{Database, DbState};
+use mart_pos::commands::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize tracing

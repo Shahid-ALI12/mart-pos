@@ -1,11 +1,29 @@
 // database/models.rs
+//
+// Every struct in this file derives `TS` from `ts-rs` with `#[ts(export)]`.
+// Running `cargo test --test export_types` (or `pnpm gen-types`) regenerates
+// matching `.ts` files under `frontend/src/shared/types/bindings/`. The
+// frontend keeps its hand-written `index.ts` for stricter union types
+// (e.g. `payment_mode: 'cash' | 'card' | ...`) but uses the bindings as
+// the canonical shape — if a Rust struct gains a field, the next
+// `pnpm gen-types` run makes it visible in TS immediately.
+//
+// Notes on ts-rs annotations:
+//   - `#[ts(skip)]`            — same as `#[serde(skip_serializing)]`
+//   - `#[ts(flatten)]`         — same as `#[serde(flatten)]`
+//   - `#[ts(rename = "type")]` — Rust field `type_` → TS field `type`
+//     (avoids the `type_` naming convention leaking into the frontend).
+//   - For generic structs (`ApiResponse<T>`), ts-rs emits a generic
+//     `ApiResponse<T>` interface — T stays as a free type parameter.
+
 use serde::{Deserialize, Serialize};
-use chrono::{DateTime, NaiveDate, NaiveDateTime};
+use chrono::{NaiveDate, NaiveDateTime};
 use sqlx::FromRow;
-use uuid::Uuid;
+use ts_rs::TS;
 
 // Roles
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/Role.ts")]
 pub struct Role {
     pub id: i64,
     pub name: String,
@@ -15,11 +33,14 @@ pub struct Role {
 }
 
 // Users
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/User.ts")]
 pub struct User {
     pub id: i64,
     pub username: String,
+    /// Not sent to the client (serde) and not emitted to TS (ts-rs).
     #[serde(skip_serializing)]
+    #[ts(skip)]
     pub password_hash: String,
     pub role_id: i64,
     pub name: String,
@@ -32,16 +53,19 @@ pub struct User {
     pub updated_at: NaiveDateTime,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/UserWithRole.ts")]
 pub struct UserWithRole {
     #[serde(flatten)]
+    #[ts(flatten)]
     pub user: User,
     pub role_name: String,
     pub role_permissions: String,
 }
 
 // Settings
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/Setting.ts")]
 pub struct Setting {
     pub key: String,
     pub value: String,  // JSON
@@ -50,7 +74,8 @@ pub struct Setting {
 }
 
 // Categories
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/Category.ts")]
 pub struct Category {
     pub id: i64,
     pub name: String,
@@ -64,7 +89,8 @@ pub struct Category {
 }
 
 // Brands
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/Brand.ts")]
 pub struct Brand {
     pub id: i64,
     pub name: String,
@@ -74,18 +100,22 @@ pub struct Brand {
 }
 
 // Units
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/Unit.ts")]
 pub struct Unit {
     pub id: i64,
     pub name: String,
     pub short_name: String,
+    /// `type_` in Rust (avoids the reserved word) — emitted as `type` in TS.
+    #[ts(rename = "type")]
     pub type_: String,  // 'count', 'weight', 'volume', 'length'
     pub decimals: i64,
     pub is_active: bool,
 }
 
 // Products
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/Product.ts")]
 pub struct Product {
     pub id: i64,
     pub barcode: Option<String>,
@@ -110,9 +140,11 @@ pub struct Product {
     pub updated_at: NaiveDateTime,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/ProductWithDetails.ts")]
 pub struct ProductWithDetails {
     #[serde(flatten)]
+    #[ts(flatten)]
     pub product: Product,
     pub category_name: String,
     pub brand_name: Option<String>,
@@ -122,7 +154,8 @@ pub struct ProductWithDetails {
 }
 
 // Product variants
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/ProductVariant.ts")]
 pub struct ProductVariant {
     pub id: i64,
     pub product_id: i64,
@@ -137,7 +170,8 @@ pub struct ProductVariant {
 }
 
 // Unit conversions
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/UnitConversion.ts")]
 pub struct UnitConversion {
     pub id: i64,
     pub product_id: i64,
@@ -148,7 +182,8 @@ pub struct UnitConversion {
 }
 
 // Stock
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/Stock.ts")]
 pub struct Stock {
     pub id: i64,
     pub product_id: i64,
@@ -163,9 +198,11 @@ pub struct Stock {
     pub last_updated: NaiveDateTime,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/StockWithDetails.ts")]
 pub struct StockWithDetails {
     #[serde(flatten)]
+    #[ts(flatten)]
     pub stock: Stock,
     pub product_name: String,
     pub product_sku: String,
@@ -176,7 +213,8 @@ pub struct StockWithDetails {
 }
 
 // Stock movements
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/StockMovement.ts")]
 pub struct StockMovement {
     pub id: i64,
     pub product_id: i64,
@@ -197,7 +235,8 @@ pub struct StockMovement {
 }
 
 // Suppliers
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/Supplier.ts")]
 pub struct Supplier {
     pub id: i64,
     pub name: String,
@@ -216,7 +255,8 @@ pub struct Supplier {
 }
 
 // Purchase Orders
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/PurchaseOrder.ts")]
 pub struct PurchaseOrder {
     pub id: i64,
     pub po_number: String,
@@ -242,7 +282,8 @@ pub struct PurchaseOrder {
 }
 
 // Purchase Order Items
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/PurchaseOrderItem.ts")]
 pub struct PurchaseOrderItem {
     pub id: i64,
     pub po_id: i64,
@@ -261,7 +302,8 @@ pub struct PurchaseOrderItem {
 }
 
 // Purchase Invoices (GRN)
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/PurchaseInvoice.ts")]
 pub struct PurchaseInvoice {
     pub id: i64,
     pub invoice_number: String,
@@ -288,7 +330,8 @@ pub struct PurchaseInvoice {
 }
 
 // Purchase Invoice Items
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/PurchaseInvoiceItem.ts")]
 pub struct PurchaseInvoiceItem {
     pub id: i64,
     pub pi_id: i64,
@@ -311,7 +354,8 @@ pub struct PurchaseInvoiceItem {
 }
 
 // Customers
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/Customer.ts")]
 pub struct Customer {
     pub id: i64,
     pub customer_code: String,
@@ -332,7 +376,8 @@ pub struct Customer {
 }
 
 // Sales Invoices
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/SalesInvoice.ts")]
 pub struct SalesInvoice {
     pub id: i64,
     pub invoice_number: String,
@@ -365,7 +410,8 @@ pub struct SalesInvoice {
 }
 
 // Sales Invoice Items
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/SalesInvoiceItem.ts")]
 pub struct SalesInvoiceItem {
     pub id: i64,
     pub invoice_id: i64,
@@ -389,10 +435,12 @@ pub struct SalesInvoiceItem {
 }
 
 // Locations
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/Location.ts")]
 pub struct Location {
     pub id: i64,
     pub name: String,
+    #[ts(rename = "type")]
     pub type_: String,
     pub address: Option<String>,
     pub is_active: bool,
@@ -401,7 +449,8 @@ pub struct Location {
 }
 
 // Expense Categories
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/ExpenseCategory.ts")]
 pub struct ExpenseCategory {
     pub id: i64,
     pub name: String,
@@ -411,7 +460,8 @@ pub struct ExpenseCategory {
 }
 
 // Expenses
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/Expense.ts")]
 pub struct Expense {
     pub id: i64,
     pub category_id: i64,
@@ -427,7 +477,8 @@ pub struct Expense {
 }
 
 // Stock Transfers
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/StockTransfer.ts")]
 pub struct StockTransfer {
     pub id: i64,
     pub transfer_number: String,
@@ -444,7 +495,8 @@ pub struct StockTransfer {
 }
 
 // Stock Transfer Items
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/StockTransferItem.ts")]
 pub struct StockTransferItem {
     pub id: i64,
     pub transfer_id: i64,
@@ -460,7 +512,8 @@ pub struct StockTransferItem {
 }
 
 // Sync Log
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/SyncLog.ts")]
 pub struct SyncLog {
     pub id: i64,
     pub table_name: String,
@@ -475,7 +528,8 @@ pub struct SyncLog {
 }
 
 // Activity Log
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/ActivityLog.ts")]
 pub struct ActivityLog {
     pub id: i64,
     pub user_id: i64,
@@ -492,7 +546,8 @@ pub struct ActivityLog {
 }
 
 // Price Lists
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/PriceList.ts")]
 pub struct PriceList {
     pub id: i64,
     pub name: String,
@@ -504,7 +559,8 @@ pub struct PriceList {
 }
 
 // Price List Items
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/PriceListItem.ts")]
 pub struct PriceListItem {
     pub id: i64,
     pub price_list_id: i64,
@@ -515,7 +571,8 @@ pub struct PriceListItem {
 }
 
 // Opening Stock
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/OpeningStock.ts")]
 pub struct OpeningStock {
     pub id: i64,
     pub financial_year: String,
@@ -531,7 +588,8 @@ pub struct OpeningStock {
 }
 
 // Financial Years
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/FinancialYear.ts")]
 pub struct FinancialYear {
     pub id: i64,
     pub name: String,
@@ -545,7 +603,8 @@ pub struct FinancialYear {
 }
 
 // Hold Bills
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/HoldBill.ts")]
 pub struct HoldBill {
     pub id: i64,
     pub hold_number: String,
@@ -564,7 +623,8 @@ pub struct HoldBill {
 }
 
 // Quotations
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/Quotation.ts")]
 pub struct Quotation {
     pub id: i64,
     pub quote_number: String,
@@ -586,7 +646,8 @@ pub struct Quotation {
 }
 
 // Layaways
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/Layaway.ts")]
 pub struct Layaway {
     pub id: i64,
     pub layaway_number: String,
@@ -605,14 +666,19 @@ pub struct Layaway {
     pub notes: Option<String>,
 }
 
-// Request/Response DTOs
-#[derive(Debug, Clone, Serialize, Deserialize)]
+// ---------------------------------------------------------------------------
+// Request / Response DTOs (no DB row, no FromRow)
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/LoginRequest.ts")]
 pub struct LoginRequest {
     pub username: String,
     pub password: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/LoginResponse.ts")]
 pub struct LoginResponse {
     pub user: UserWithRole,
     pub token: String,  // JWT
@@ -620,7 +686,8 @@ pub struct LoginResponse {
 }
 
 /// JWT claims — signed with HMAC-SHA256 using a secret stored in the `settings` table.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/Claims.ts")]
 pub struct Claims {
     /// Subject (user_id)
     pub sub: i64,
@@ -636,7 +703,10 @@ pub struct Claims {
     pub jti: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+/// Generic paginated response wrapper. ts-rs emits this as a generic TS interface:
+/// `interface PaginatedResponse<T> { data: T[]; total: number; ... }`.
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/PaginatedResponse.ts")]
 pub struct PaginatedResponse<T> {
     pub data: Vec<T>,
     pub total: i64,
@@ -645,7 +715,9 @@ pub struct PaginatedResponse<T> {
     pub total_pages: i64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+/// Generic API response envelope used by command stubs.
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../frontend/src/shared/types/bindings/ApiResponse.ts")]
 pub struct ApiResponse<T> {
     pub success: bool,
     pub data: Option<T>,

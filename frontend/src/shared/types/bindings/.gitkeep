@@ -1,0 +1,2 @@
+# Placeholder so the bindings/ folder is created on a fresh clone.
+# Run `pnpm gen-types` to populate this folder with the actual .ts files.

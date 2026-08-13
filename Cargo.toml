@@ -40,6 +40,17 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_with = "3.22"
 
+# Rust → TypeScript type generation.
+# `ts-rs` emits `.ts` files (one per struct) when `cargo test --test export_types`
+# is run. The generated files land in `frontend/src/shared/types/bindings/` and
+# give the frontend a single source of truth for backend types — no more
+# hand-maintained interfaces drifting away from the Rust models.
+# - `chrono-impl`: emit `string` for NaiveDateTime / NaiveDate (matches serde).
+# - `uuid-impl`:     emit `string` for Uuid.
+# - `import-esm`:    generated files use `import type` syntax compatible with Vite.
+# - `no-serde-warnings`: silence the "field uses a serde attribute without a ts-rs equivalent" warning.
+ts-rs = { version = "10", features = ["chrono-impl", "uuid-impl", "import-esm", "no-serde-warnings"] }
+
 # Async
 tokio = { version = "1.0", features = ["full"] }
 tokio-util = "0.7"
