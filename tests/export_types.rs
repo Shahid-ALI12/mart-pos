@@ -20,7 +20,12 @@
 //   - We can run JUST the type export with `cargo test --test export_types`
 //     without paying for the rest of the test suite.
 
+// Import the `TS` trait so the `Role::export()` / `User::export()` / ...
+// associated-function calls below resolve to `<T as TS>::export()`.
+// Without this `use`, rustc emits E0599 "no associated function or constant
+// named `export` found" for every struct in `models::*`.
 use mart_pos::database::models::*;
+use ts_rs::TS;
 
 #[test]
 fn export_all_types_to_typescript() {
