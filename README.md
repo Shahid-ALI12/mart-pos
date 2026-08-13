@@ -193,7 +193,7 @@ Supported hardware via Tauri commands:
 
 ## License
 
-Private repository - All rights reserved.
+Public repository - All rights reserved.
 
 ## Author
 
