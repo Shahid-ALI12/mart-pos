@@ -93,10 +93,12 @@ jobs:
         run: cargo build --verbose
 
       - name: Clippy
-        # Non-blocking for now — the codebase has pre-existing warnings that
-        # predate CI. As those are cleaned up, change `continue-on-error` to
-        # `false` to make clippy a gate.
-        continue-on-error: true
+        # Clippy gate — fails the CI job on any lint warning. Was previously
+        # `continue-on-error: true` while the codebase had pre-existing
+        # warnings; those have been paid down so clippy now runs clean with
+        # `-D warnings`. Keep it that way: fix new lints as they appear
+        # instead of letting them accumulate.
+        continue-on-error: false
         run: cargo clippy --all-targets -- -D warnings
 
       - name: Run tests
