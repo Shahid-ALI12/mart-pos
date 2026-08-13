@@ -6,6 +6,7 @@ use anyhow::Result;
 // Repository implementations would go here
 // For now, just placeholder
 
+#[allow(dead_code)]
 pub struct UserRepository {
     pool: DbPool,
 }
