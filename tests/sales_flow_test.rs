@@ -19,11 +19,11 @@
 // catch it on the next `cargo test` run.
 
 use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};
-use sqlx::Row;
 use sqlx::SqlitePool;
 
 async fn fresh_db() -> SqlitePool {
-    let options = SqliteConnectOptions::from_filename(":memory:")
+    let options = SqliteConnectOptions::new()
+        .filename(":memory:")
         .foreign_keys(true);
 
     let pool = SqlitePoolOptions::new()

@@ -20,7 +20,8 @@ use sqlx::SqlitePool;
 /// Spin up a fresh in-memory SQLite pool with all migrations applied.
 /// Each test gets its own private database (in-memory + unique connection).
 async fn fresh_db() -> SqlitePool {
-    let options = SqliteConnectOptions::from_filename(":memory:")
+    let options = SqliteConnectOptions::new()
+        .filename(":memory:")
         .foreign_keys(true)
         .journal_mode(sqlx::sqlite::SqliteJournalMode::Wal);
 
