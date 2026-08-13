@@ -207,7 +207,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             // Initialize database synchronously
             let rt = tokio::runtime::Runtime::new().unwrap();
             let init_result: Result<(), anyhow::Error> = rt.block_on(async {
-                if let Err(e) = Database::initialize(&app_handle, &db_state).await {
+                if let Err(e) = Database::initialize(&app_handle, db_state).await {
                     error!("Failed to initialize database: {}", e);
                 } else {
                     info!("Database initialized successfully");

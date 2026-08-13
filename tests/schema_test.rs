@@ -59,7 +59,7 @@ async fn admin_user_is_seeded_with_valid_argon2_hash() {
 
     assert_eq!(row.get::<String, _>("username"), "admin");
     assert_eq!(row.get::<i64, _>("role_id"), 1);
-    assert_eq!(row.get::<bool, _>("is_active"), true);
+    assert!(row.get::<bool, _>("is_active"));
 
     let hash: String = row.get("password_hash");
     // The hash must be a valid PHC string — starts with $argon2id$ and has
