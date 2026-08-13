@@ -30,21 +30,32 @@ A comprehensive desktop POS and ERP system for large general stores/marts with m
 ```
 mart-pos/
 ├── src/                      # Rust backend (Tauri)
-│   ├── main.rs
+│   ├── main.rs               # Binary entry — Tauri command wiring lives here
+│   ├── lib.rs                # Library facade so integration tests can import modules
 │   ├── database/
-│   │   ├── migrations/       # SQLx migrations
-│   │   ├── models/           # Data models
-│   │   ├── repositories/     # Data access layer
-│   │   └── sync/             # WebRTC sync engine
-│   ├── commands/             # Tauri invoke handlers
-│   └── utils/
+│   │   ├── migrations/       # SQLx migrations (6 files, ~30 tables)
+│   │   ├── models.rs         # Data models — derives TS so ts-rs can export them
+│   │   ├── repositories.rs   # Data access layer
+│   │   └── sync.rs           # WebRTC sync engine
+│   ├── commands/             # Tauri invoke handlers (auth, sales, products, ...)
+│   └── utils.rs
+├── tests/                    # Rust integration tests
+│   ├── schema_test.rs        # Migrations apply cleanly + constraints enforced
+│   ├── sales_flow_test.rs    # End-to-end sales invoice SQL flow
+│   └── export_types.rs       # Drives ts-rs to emit .ts bindings
 ├── frontend/                 # React frontend
 │   ├── src/
-│   │   ├── modules/          # Feature modules
-│   │   ├── shared/           # Shared components, hooks, utils
-│   │   ├── stores/           # Zustand stores
-│   │   └── services/         # API calls
+│   │   ├── modules/          # Feature modules (POS split into components/ + hooks/)
+│   │   ├── shared/
+│   │   │   ├── types/
+│   │   │   │   ├── index.ts          # Hand-written types (stricter unions)
+│   │   │   │   └── bindings/         # ts-rs auto-generated .ts files (gitignored)
+│   │   │   ├── components/   # Reusable UI (Button, Input, Card, Layout)
+│   │   │   └── utils.ts
+│   │   └── stores/           # Zustand stores
 │   └── package.json
+├── .github/workflows/
+│   └── ci.yml                # Backend (fmt/clippy/test) + Frontend (tsc/build)
 ├── Cargo.toml
 ├── tauri.conf.json
 └── README.md
@@ -83,6 +94,47 @@ cargo tauri build
 # - AppImage/Deb/RPM (Linux)
 # - DMG (macOS)
 ```
+
+## Development Scripts
+
+```bash
+# Run the full app (Tauri dev starts both Rust + Vite)
+pnpm dev
+
+# Regenerate TypeScript bindings from Rust structs
+# (run after changing fields in src/database/models.rs)
+pnpm gen-types
+# Output: frontend/src/shared/types/bindings/*.ts
+
+# Run Rust integration tests (schema, sales flow, type export)
+cargo test --verbose
+
+# Run just the type export step
+cargo test --test export_types -- --nocapture
+
+# Check Rust formatting
+cargo fmt --all -- --check
+
+# Lint Rust
+cargo clippy --all-targets -- -D warnings
+
+# Type-check the frontend (does not emit files)
+cd frontend && pnpm exec tsc --noEmit
+```
+
+## Continuous Integration
+
+GitHub Actions runs on every push and PR to `main` (see
+`.github/workflows/ci.yml`):
+
+- **Backend** — `cargo fmt --check`, `cargo build`, `cargo clippy`, `cargo test`
+  (includes the schema + sales-flow + type-export integration tests), with
+  `libsqlite3-sys` built with `bundled-sqlcipher-vendored-openssl`.
+- **Frontend** — `pnpm install --frozen-lockfile`, `tsc --noEmit`, `pnpm build`.
+
+`clippy` and `tsc --noEmit` are currently non-blocking (`continue-on-error: true`)
+to accommodate pre-existing warnings; they will be tightened as the codebase
+stabilizes.
 
 ## Database Schema
 
