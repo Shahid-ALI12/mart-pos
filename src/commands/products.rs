@@ -18,6 +18,7 @@ use tauri::{State, AppHandle};
 use sqlx::Row;
 
 #[tauri::command]
+#[allow(clippy::too_many_arguments)]
 pub async fn list_products(
     _app: AppHandle,
     db_state: State<'_, DbState>,

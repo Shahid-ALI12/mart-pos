@@ -80,6 +80,7 @@ pub struct CreateSalesInvoiceResult {
 // ----------------------------------------------------------------------------
 
 #[tauri::command]
+#[allow(clippy::too_many_arguments)]
 pub async fn create_sales_invoice(
     _app: AppHandle,
     db_state: State<'_, DbState>,

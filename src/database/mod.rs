@@ -187,7 +187,7 @@ fn load_or_create_key(key_path: &PathBuf) -> Result<String> {
     // Generate a new 32-byte key with OsRng (cryptographically secure).
     let mut bytes = [0u8; KEY_LEN];
     rand::thread_rng().fill_bytes(&mut bytes);
-    fs::write(key_path, &bytes)?;
+    fs::write(key_path, bytes)?;
     info!(
         "Generated new DB encryption key at {} ({} bytes)",
         key_path.display(),
