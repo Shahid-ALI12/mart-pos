@@ -197,8 +197,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .setup(|app| {
             // Initialize database connection synchronously
             let app_handle = app.handle().clone();
-            let db_state = app.state::<DbState>().inner().clone();
-            
+            // `.inner()` returns `&DbState` and `Database::initialize` takes
+            // `&DbState`, so no clone is needed — and `DbState` doesn't
+            // implement `Clone` anyway (its `Mutex<Option<DbPool>>` field
+            // isn't clonable). The previous `.clone()` was a no-op clone
+            // of the reference itself, which `-D noop-method-call` rejects.
+            let db_state = app.state::<DbState>().inner();
+
             // Initialize database synchronously
             let rt = tokio::runtime::Runtime::new().unwrap();
             let init_result: Result<(), anyhow::Error> = rt.block_on(async {
