@@ -578,7 +578,11 @@ pub async fn get_low_stock(
         ""
     };
 
-    let mut q = sqlx::query(&format!(
+    // Build the SQL as an owned String first so the borrow lives long enough
+    // for the `q.bind(...)` calls below. Passing `&format!(...)` directly to
+    // `sqlx::query` would create a temporary that is dropped at the end of
+    // the statement, but `q` borrows from it.
+    let sql = format!(
         r#"SELECT p.id, p.barcode, p.sku, p.name, p.category_id, p.brand_id,
                   p.unit_id, p.purchase_price, p.sale_price, p.min_sale_price,
                   p.mrp, p.gst_rate, p.hsn_code, p.reorder_level,
@@ -606,7 +610,8 @@ pub async fn get_low_stock(
         loc_clause_full = if location_id.is_some() { "AND s2.location_id = ?" } else { "" },
         loc_clause = location_clause,
         zero_clause = if include_zero { "" } else { "AND current_stock > 0" }
-    ));
+    );
+    let mut q = sqlx::query(&sql);
 
     if let Some(lid) = location_id {
         q = q.bind(lid).bind(lid);
