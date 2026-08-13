@@ -129,9 +129,11 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Install Node.js
+        # pnpm 11.21.0 (declared in packageManager field) requires Node >=22.13
+        # because pnpm 11 internally uses node:sqlite — only available in Node 22+.
         uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
           # Workspace root has the single pnpm-lock.yaml covering both the
           # root package (Tauri CLI) and the frontend workspace package.
