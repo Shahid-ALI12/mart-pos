@@ -16,6 +16,14 @@ CREATE TABLE categories (
 
 CREATE INDEX idx_categories_parent ON categories(parent_id);
 
+-- Default category so products can be created out of the box (the
+-- products table has `category_id INTEGER NOT NULL REFERENCES categories(id)`).
+-- The sales_flow_test integration test (and any first-run app install) relies
+-- on a category with id=1 existing — without it, every product INSERT fails
+-- with SQLITE_CONSTRAINT_FOREIGNKEY (error code 787).
+INSERT INTO categories (id, name, parent_id, gst_rate, description, is_active) VALUES
+(1, 'General', NULL, 0, 'Default category for products that have not been assigned to a specific category yet', 1);
+
 CREATE TABLE brands (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL UNIQUE,
