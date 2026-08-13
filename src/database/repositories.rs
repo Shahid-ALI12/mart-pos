@@ -2,7 +2,6 @@
 use crate::database::models::*;
 use crate::database::DbPool;
 use anyhow::Result;
-use sqlx::Row;
 
 // Repository implementations would go here
 // For now, just placeholder

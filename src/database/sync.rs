@@ -1,5 +1,4 @@
 // database/sync.rs - Multi-counter sync engine (stub)
-use crate::database::models::*;
 use anyhow::Result;
 
 pub struct SyncEngine {

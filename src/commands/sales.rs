@@ -91,9 +91,9 @@ pub async fn create_sales_invoice(
     discount_amount: Option<f64>,
     discount_percent: Option<f64>,
     notes: Option<String>,
-    /// Optional JWT — if provided, the user_id is taken from its claims.
-    /// If absent, defaults to admin (id=1) for backward compatibility with
-    /// the frontend's current call site. Step 6+ will start passing the token.
+    // Optional JWT — if provided, the user_id is taken from its claims.
+    // If absent, defaults to admin (id=1) for backward compatibility with
+    // the frontend's current call site. Step 6+ will start passing the token.
     token: Option<String>,
 ) -> Result<CreateSalesInvoiceResult, String> {
     let pool = pool(&db_state)?;
