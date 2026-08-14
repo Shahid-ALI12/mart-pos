@@ -12,7 +12,7 @@
 // for now to match the original POS.tsx stub.
 
 import { Button } from '../../../shared/components/ui/button'
-import { X, Hold } from 'lucide-react'
+import { X, Pause } from 'lucide-react'
 import { formatCurrency } from '../../../shared/utils'
 
 interface HeldBill {
@@ -56,7 +56,7 @@ export function HoldBillModal({
             className="w-full mb-2"
             onClick={onHoldCurrent}
           >
-            <Hold className="h-5 w-5 mr-2" />
+            <Pause className="h-5 w-5 mr-2" />
             Hold Current Bill
           </Button>
 

@@ -7,7 +7,7 @@ import { Button } from '../../shared/components/ui/button'
 import { Input } from '../../shared/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '../../shared/components/ui/card'
 import {
-  Plus, Search, Edit, Trash2, Eye, Barcode, Download, Upload, Filter,
+  Plus, Search, Pencil, Trash2, Eye, Barcode, Download, Upload, Filter,
   Package, Tag, Box, RotateCcw, AlertTriangle, Clock,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -205,7 +205,7 @@ export function Products() {
                           <td className="p-3 text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Button variant="ghost" size="icon" onClick={() => openEdit(product)} title="Edit">
-                                <Edit className="h-4 w-4" />
+                                <Pencil className="h-4 w-4" />
                               </Button>
                               <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(product.id)} title="Delete" className="text-red-600 hover:bg-red-50">
                                 <Trash2 className="h-4 w-4" />
