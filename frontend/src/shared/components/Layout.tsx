@@ -33,9 +33,9 @@ import {
   FileSpreadsheet,
   type LucideIcon,
 } from 'lucide-react'
-import { Button } from '../shared/components/ui/button'
-import { cn } from '../shared/utils'
-import { formatCurrency } from '../shared/utils'
+import { Button } from './ui/button'
+import { cn } from '../utils'
+import { formatCurrency } from '../utils'
 
 interface NavItem {
   title: string
