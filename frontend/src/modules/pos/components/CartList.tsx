@@ -9,7 +9,7 @@
 // user may be looking at either side of the screen).
 
 import type { CartItem } from '../../../shared/types'
-import { Button } from '../../../shared/components/ui/Button'
+import { Button } from '../../../shared/components/ui/button'
 import { Trash2, Minus, Plus, Hold, Package } from 'lucide-react'
 import { formatCurrency, formatNumber } from '../../../shared/utils'
 

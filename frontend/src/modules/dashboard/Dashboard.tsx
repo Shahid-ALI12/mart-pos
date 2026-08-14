@@ -1,9 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from '../../shared/components/ui/Card'
-import { Users, ShoppingCart, Package, Truck, Rupee, TrendingUp, AlertTriangle, Clock, Search, CheckCircle, CreditCard, BarChart3 } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '../../shared/components/ui/card'
+import { CardDescription } from '../../shared/components/ui/card'
+import { Users, ShoppingCart, Package, Truck, IndianRupee as Rupee, TrendingUp, AlertTriangle, Clock, Search, CheckCircle, CreditCard, BarChart3 } from 'lucide-react'
 import { formatCurrency, formatNumber } from '../../shared/utils'
 import { useQuery } from '@tanstack/react-query'
 import { invoke } from '@tauri-apps/api/core'
-import { CardDescription } from '../../shared/components/ui/Card'
 
 interface DashboardStats {
   todaySales: number

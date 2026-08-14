@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './stores/authStore'
 import { Layout } from './shared/components/Layout'
@@ -11,60 +12,60 @@ import { StockTransfer } from './modules/inventory/StockTransfer'
 import { LowStockAlerts } from './modules/inventory/LowStockAlerts'
 import { ExpiryManagement } from './modules/inventory/ExpiryManagement'
 import { BarcodeLabels } from './modules/inventory/BarcodeLabels'
-import { 
-  Suppliers, 
-  PurchaseOrders, 
-  GoodsReceipt, 
-  PurchaseReturns, 
-  PayablesReport 
+import {
+  Suppliers,
+  PurchaseOrders,
+  GoodsReceipt,
+  PurchaseReturns,
+  PayablesReport
 } from './modules/purchases'
-import { 
-  SalesRegister, 
-  SalesReturn, 
-  Quotations, 
-  Layaways, 
-  CustomerOutstanding 
+import {
+  SalesRegister,
+  SalesReturn,
+  Quotations,
+  Layaways,
+  CustomerOutstanding
 } from './modules/sales'
-import { 
-  Customers, 
-  LoyaltyProgram, 
-  CreditManagement, 
-  CustomerStatements 
+import {
+  Customers,
+  LoyaltyProgram,
+  CreditManagement,
+  CustomerStatements
 } from './modules/customers'
-import { 
-  SalesReports, 
-  ProfitLossReport, 
-  StockReports, 
-  GSTReports, 
-  CounterPerformance, 
-  TopProducts, 
-  CustomReportBuilder 
+import {
+  SalesReports,
+  ProfitLossReport,
+  StockReports,
+  GSTReports,
+  CounterPerformance,
+  TopProducts,
+  CustomReportBuilder
 } from './modules/reports'
-import { 
-  ExpenseEntry, 
-  ExpenseReports, 
-  PettyCash 
+import {
+  ExpenseEntry,
+  ExpenseReports,
+  PettyCash
 } from './modules/expenses'
-import { 
-  UserManagement, 
-  RolePermissions, 
-  ActivityLog 
+import {
+  UserManagement,
+  RolePermissions,
+  ActivityLog
 } from './modules/users'
-import { 
-  GeneralSettings, 
-  CounterSetup, 
-  TaxSetup, 
-  BackupRestore, 
-  SyncSettings, 
-  HardwareConfig 
+import {
+  GeneralSettings,
+  CounterSetup,
+  TaxSetup,
+  BackupRestore,
+  SyncSettings,
+  HardwareConfig
 } from './modules/settings'
 import { ProtectedRoute } from './shared/components/ProtectedRoute'
 
 function App() {
-  const { isAuthenticated, initializeAuth } = useAuthStore()
+  const initializeAuth = useAuthStore((s) => s.initializeAuth)
 
   // Initialize auth on app start
-  React.useEffect(() => {
+  useEffect(() => {
     initializeAuth()
   }, [initializeAuth])
 

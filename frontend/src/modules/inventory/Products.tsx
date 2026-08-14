@@ -3,9 +3,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { invoke } from '@tauri-apps/api/core'
 import { formatCurrency } from '../../shared/utils'
 import { ProductWithDetails, Category, Brand, Unit } from '../../shared/types'
-import { Button } from '../../shared/components/ui/Button'
-import { Input } from '../../shared/components/ui/Input'
-import { Card, CardContent, CardHeader, CardTitle } from '../../shared/components/ui/Card'
+import { Button } from '../../shared/components/ui/button'
+import { Input } from '../../shared/components/ui/input'
+import { Card, CardContent, CardHeader, CardTitle } from '../../shared/components/ui/card'
 import {
   Plus, Search, Edit, Trash2, Eye, Barcode, Download, Upload, Filter,
   Package, Tag, Box, RotateCcw, AlertTriangle, Clock,

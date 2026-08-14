@@ -10,8 +10,8 @@
 // to POS.processSale(). This keeps the modal reusable for any future
 // "edit before finalize" flow.
 
-import { Button } from '../../../shared/components/ui/Button'
-import { Input } from '../../../shared/components/ui/Input'
+import { Button } from '../../../shared/components/ui/button'
+import { Input } from '../../../shared/components/ui/input'
 import { X } from 'lucide-react'
 import { formatCurrency } from '../../../shared/utils'
 import toast from 'react-hot-toast'

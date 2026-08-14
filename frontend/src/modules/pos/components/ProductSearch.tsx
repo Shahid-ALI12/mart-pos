@@ -17,7 +17,7 @@ import { useQuery } from '@tanstack/react-query'
 import { invoke } from '@tauri-apps/api/core'
 import { Search } from 'lucide-react'
 import type { ProductWithDetails } from '../../../shared/types'
-import { Input } from '../../../shared/components/ui/Input'
+import { Input } from '../../../shared/components/ui/input'
 import { formatCurrency } from '../../../shared/utils'
 
 interface ProductSearchProps {

@@ -10,8 +10,8 @@
 // (which reads the same state) sees the same values.
 
 import type { PaymentDetail, Customer } from '../../../shared/types'
-import { Button } from '../../../shared/components/ui/Button'
-import { Input } from '../../../shared/components/ui/Input'
+import { Button } from '../../../shared/components/ui/button'
+import { Input } from '../../../shared/components/ui/input'
 import {
   DollarSign, CreditCard, Smartphone, UserPlus,
   Plus, X, FileText,

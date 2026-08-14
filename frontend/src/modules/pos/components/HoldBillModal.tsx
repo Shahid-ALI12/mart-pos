@@ -11,7 +11,7 @@
 // with TanStack Query and pass them in. The shape is intentionally `any`
 // for now to match the original POS.tsx stub.
 
-import { Button } from '../../../shared/components/ui/Button'
+import { Button } from '../../../shared/components/ui/button'
 import { X, Hold } from 'lucide-react'
 import { formatCurrency } from '../../../shared/utils'
 

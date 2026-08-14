@@ -35,8 +35,8 @@ import { invoke } from '@tauri-apps/api/core'
 import toast from 'react-hot-toast'
 
 import type { ProductWithDetails, Customer, CartItem } from '../../shared/types'
-import { Button } from '../../shared/components/ui/Button'
-import { Input } from '../../shared/components/ui/Input'
+import { Button } from '../../shared/components/ui/button'
+import { Input } from '../../shared/components/ui/input'
 import { Barcode, UserPlus, RotateCcw, X } from 'lucide-react'
 
 import { useCart } from './hooks/useCart'

@@ -6,8 +6,8 @@
 // here. When the customer search command lands, this component is the only
 // thing that needs to change.
 
-import { Button } from '../../../shared/components/ui/Button'
-import { Input } from '../../../shared/components/ui/Input'
+import { Button } from '../../../shared/components/ui/button'
+import { Input } from '../../../shared/components/ui/input'
 import { X } from 'lucide-react'
 import type { Customer } from '../../../shared/types'
 

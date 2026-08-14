@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react'
-import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import { Outlet, NavLink, useLocation, Navigate, type Location as RouterLocation } from 'react-router-dom'
 import { useAuthStore } from '../../stores/authStore'
 import {
   LayoutDashboard,
@@ -33,7 +33,7 @@ import {
   FileSpreadsheet,
   type LucideIcon,
 } from 'lucide-react'
-import { Button } from '../shared/components/ui/Button'
+import { Button } from '../shared/components/ui/button'
 import { cn } from '../shared/utils'
 import { formatCurrency } from '../shared/utils'
 
@@ -303,11 +303,11 @@ export function Layout() {
   )
 }
 
-function NavItemComponent({ item, isActive, collapsed, location }: { 
+function NavItemComponent({ item, isActive, collapsed, location }: {
   item: NavItem
   isActive: boolean
   collapsed: boolean
-  location: Location
+  location: RouterLocation
 }) {
   const [expanded, setExpanded] = useState(false)
   const hasChildren = item.children && item.children.length > 0

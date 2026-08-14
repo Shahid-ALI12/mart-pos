@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Lock, Eye, EyeOff, Building2 } from 'lucide-react'
 import { useAuthStore } from '../../stores/authStore'
-import { Button } from '../../shared/components/ui/Button'
-import { Input } from '../../shared/components/ui/Input'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../shared/components/ui/Card'
+import { Button } from '../../shared/components/ui/button'
+import { Input } from '../../shared/components/ui/input'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../shared/components/ui/card'
 import toast from 'react-hot-toast'
 
 export function Login() {
