@@ -10,7 +10,7 @@
 
 import type { CartItem } from '../../../shared/types'
 import { Button } from '../../../shared/components/ui/button'
-import { Trash2, Minus, Plus, Hold, Package } from 'lucide-react'
+import { Trash2, Minus, Plus, Pause, Package } from 'lucide-react'
 import { formatCurrency, formatNumber } from '../../../shared/utils'
 
 interface CartListProps {
@@ -34,7 +34,7 @@ export function CartList({ cart, totalQty, onUpdateQty, onRemove, onClear, onHol
             Clear
           </Button>
           <Button variant="outline" size="sm" onClick={onHold} disabled={cart.length === 0}>
-            <Hold className="h-4 w-4 mr-1" />
+            <Pause className="h-4 w-4 mr-1" />
             Hold
           </Button>
         </div>
