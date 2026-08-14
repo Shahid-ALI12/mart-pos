@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "identifier": "com.shahidali.martpos",
   "build": {
-    "beforeDevCommand": "pnpm --filter frontend dev",
+    "beforeDevCommand": "pnpm --filter mart-pos-frontend dev",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "pnpm --filter frontend build",
+    "beforeBuildCommand": "pnpm --filter mart-pos-frontend build",
     "frontendDist": "../frontend/dist"
   },
   "app": {
