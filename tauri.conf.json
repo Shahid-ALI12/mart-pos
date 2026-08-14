@@ -7,7 +7,7 @@
     "beforeDevCommand": "pnpm --filter mart-pos-frontend dev",
     "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "pnpm --filter mart-pos-frontend build",
-    "frontendDist": "../frontend/dist"
+    "frontendDist": "frontend/dist"
   },
   "app": {
     "windows": [
