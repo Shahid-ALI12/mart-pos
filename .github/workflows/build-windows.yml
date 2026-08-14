@@ -89,14 +89,29 @@ jobs:
       - name: Locate built installer
         # The NSIS installer path includes spaces and the version number,
         # so we use a glob to find it instead of hardcoding the path.
+        # Note: Tauri writes its output under `target/release/bundle/nsis/`
+        # (relative to the repo root for this project, since there is no
+        # `src-tauri/` subdirectory — tauri.conf.json lives at the root).
         id: find_installer
         shell: bash
         run: |
-          # shellcheck disable=SC2086
-          INSTALLER=$(ls "src-tauri/target/release/bundle/nsis/"*-setup.exe | head -n1)
+          set -e
+          # Try the standard Tauri output locations.
+          INSTALLER=""
+          for candidate in \
+            "target/release/bundle/nsis/"*-setup.exe \
+            "src-tauri/target/release/bundle/nsis/"*-setup.exe; do
+            if [ -f "$candidate" ]; then
+              INSTALLER="$candidate"
+              break
+            fi
+          done
           if [ -z "$INSTALLER" ]; then
-            echo "ERROR: No NSIS installer found in src-tauri/target/release/bundle/nsis/"
-            ls -la "src-tauri/target/release/bundle/nsis/" || true
+            echo "ERROR: No NSIS installer found in target/ or src-tauri/target/"
+            echo "--- Listing target/release/bundle/ (if it exists) ---"
+            ls -la target/release/bundle/ 2>/dev/null || true
+            echo "--- Listing src-tauri/target/release/bundle/ (if it exists) ---"
+            ls -la src-tauri/target/release/bundle/ 2>/dev/null || true
             exit 1
           fi
           echo "Found installer: $INSTALLER"
