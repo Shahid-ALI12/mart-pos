@@ -1,0 +1,128 @@
+# .github/workflows/build-windows.yml
+#
+# Builds the Mart POS Tauri app into a Windows .exe installer (NSIS) on
+# every push of a version tag (v*.*.*) and uploads the artifact to a
+# GitHub Release. The release is created automatically by softprops/
+# action-gh-release@v2 — no manual steps needed.
+#
+# Why a separate workflow instead of folding into ci.yml?
+#   - ci.yml is the "gate" (fmt + clippy + tests). It runs on every push
+#     and PR and should be fast and never produce artifacts.
+#   - This workflow is the "release builder" — it only runs on tags,
+#     does a full release build (slow, ~20-30 min), and ships binaries.
+#
+# How to trigger a build locally:
+#   git tag v0.1.0
+#   git push origin v0.1.0
+#
+# Then watch the Actions tab — when the run finishes, the .exe installer
+# will be available under the repo's "Releases" page.
+#
+# Note on caching: Tauri release builds on Windows take ~25 minutes cold
+# and ~10 minutes warm (with cargo cache hit). The Swatinem/rust-cache
+# action caches both the registry and target/ directory between runs.
+
+name: Build Windows Installer
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    # Manual trigger from the Actions tab — useful for testing the build
+    # without cutting a real release tag.
+
+permissions:
+  contents: write
+  # ^ needed by softprops/action-gh-release to create a release and upload
+  # the .exe as a release asset.
+
+jobs:
+  build-windows:
+    name: Build Windows .exe (NSIS)
+    runs-on: windows-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install Rust toolchain (stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo registry + target
+        # Caches the entire target/ directory between builds. Saves ~15
+        # minutes on warm builds. Cache key includes the OS + Cargo.lock
+        # hash so a dependency change busts the cache correctly.
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "."
+          key: "windows-release-${{ runner.os }}"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install Node.js 22
+        # pnpm 11.21.0 (declared in packageManager field) requires Node >=22.13
+        # because pnpm 11 internally uses node:sqlite — only available in Node 22+.
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install frontend dependencies
+        # Workspace root install — pnpm-workspace.yaml declares `frontend`
+        # as a workspace package, so a single `pnpm install` resolves deps
+        # for BOTH the root (Tauri CLI) and the frontend in one pass.
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Tauri app (release)
+        # `tauri build` does:
+        #   1. Runs `pnpm --filter frontend build` (Vite production build)
+        #   2. Compiles the Rust binary in release mode
+        #   3. Bundles it into a Windows NSIS installer (.exe)
+        # Output appears at:
+        #   src-tauri/target/release/bundle/nsis/Mart POS_0.1.0_x64-setup.exe
+        run: pnpm tauri build
+
+      - name: Locate built installer
+        # The NSIS installer path includes spaces and the version number,
+        # so we use a glob to find it instead of hardcoding the path.
+        id: find_installer
+        shell: bash
+        run: |
+          # shellcheck disable=SC2086
+          INSTALLER=$(ls "src-tauri/target/release/bundle/nsis/"*-setup.exe | head -n1)
+          if [ -z "$INSTALLER" ]; then
+            echo "ERROR: No NSIS installer found in src-tauri/target/release/bundle/nsis/"
+            ls -la "src-tauri/target/release/bundle/nsis/" || true
+            exit 1
+          fi
+          echo "Found installer: $INSTALLER"
+          cp "$INSTALLER" "Mart-POS-windows-x64-setup.exe"
+          echo "path=Mart-POS-windows-x64-setup.exe" >> "$GITHUB_OUTPUT"
+
+      - name: Upload artifact (CI download)
+        # Always upload as a workflow artifact so we can grab it even
+        # when the workflow was triggered manually (no release tag).
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mart-POS-windows-x64-setup
+          path: ${{ steps.find_installer.outputs.path }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Create / update GitHub Release
+        # Only create a Release when triggered by a tag push (not manual
+        # workflow_dispatch). For manual runs the artifact above is
+        # enough — the user can download it from the Actions run page.
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Mart POS ${{ github.ref_name }}
+          generate_release_notes: true
+          files: ${{ steps.find_installer.outputs.path }}
+          draft: false
+          prerelease: false
