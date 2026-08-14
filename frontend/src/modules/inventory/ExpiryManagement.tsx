@@ -134,7 +134,7 @@ export function ExpiryManagement() {
             <option value="critical">Critical (≤3 days)</option>
             <option value="urgent">Urgent (4-7 days)</option>
             <option value="soon">Soon (8-30 days)</option>
-            <option value="ok">OK (>30 days)</option>
+            <option value="ok">OK ({'>30 days'})</option>
           </select>
           <select
             value={sortBy}
