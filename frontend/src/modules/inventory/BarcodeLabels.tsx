@@ -6,7 +6,7 @@ import { Label } from '@/shared/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table'
 import { Barcode, Printer, Download, Plus, Trash2, Eye } from 'lucide-react'
-import * as JsBarcode from 'jsbarcode'
+import JsBarcode from 'jsbarcode'
 
 interface LabelItem {
   id: string
